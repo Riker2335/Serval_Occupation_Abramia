@@ -1,6 +1,6 @@
 /*
 	"Town Occupation" v1.0 DMS static mission for Isla Abramia.
-	Created by Riker using templates by eraser1 with mission code layout and features inspired by mission files from [CiC]red_ned. Thanks guys!
+	Created by Riker using templates by eraser1 with mission code layout and features inspired by mission files from [CiC]red_ned and second_coming. Thanks guys!
 	
 	The mission also has 2 roaming AI vehicles that do not use the standard DMS mission armed vehicles list, this allows for the selection of much harder vehicles for this mission if you wish.
 */

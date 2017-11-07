@@ -8,7 +8,7 @@
 ////////////////////////////////////////////////
 // Variable Declarations & Array configs
 ////////////////////////////////////////////////
-private ["_wp", "_wp2", "_wp3", "_pos", "_AICount", "_group1Count", "_group2Count", "_group3Count", "_AIMaxReinforcements", "_AItrigger", "_AIwave", "_AIdelay", "_staticguns", "_missionObjs", "_crate0", "_crate1", "_crate2", "_crate3", "_crate4", "_crate_loot_values0", "_crate_loot_values1", "_crate_loot_values2", "_crate_loot_values3", "_crate_loot_values4", "_crate_weapons0", "_crate_weapons1", "_crate_weapons2", "_crate_weapons3", "_crate_weapons4", "_crate_items0", "_crate_items1", "_crate_items2", "_crate_items3", "_crate_items4", "_crate_backpacks0", "_crate_backpacks1", "_crate_backpacks2", "_crate_backpacks3", "_crate_backpacks4", "_crate_cash4", "_difficultyM", "_difficulty", "_PossibleDifficulty", "_msgWIN", "_veh", "_veh1", "_veh2", "_crate1_item_list", "_crate1_weapon_list", "_crate3_Item_List", "_crate4_item_list", "_crate4_backpack_list", "_ai_vehicle_list", "_ai_vehicle_0", "_ai_vehicle_1", "_crate4_position_list", "_crate4_position"];
+private ["_wp", "_wp2", "_wp3", "_pos", "_AICount", "_group","_group1", "_group2", "_group3", "_group1Count", "_group2Count", "_group3Count", "_AIMaxReinforcements", "_AItrigger", "_AIwave", "_AIdelay", "_staticguns", "_missionObjs", "_crate0", "_crate1", "_crate2", "_crate3", "_crate4", "_crate_loot_values0", "_crate_loot_values1", "_crate_loot_values2", "_crate_loot_values3", "_crate_loot_values4", "_crate_weapons0", "_crate_weapons1", "_crate_weapons2", "_crate_weapons3", "_crate_weapons4", "_crate_items0", "_crate_items1", "_crate_items2", "_crate_items3", "_crate_items4", "_crate_backpacks0", "_crate_backpacks1", "_crate_backpacks2", "_crate_backpacks3", "_crate_backpacks4", "_crate_cash4", "_difficultyM", "_difficulty", "_PossibleDifficulty", "_msgWIN", "_veh", "_veh1", "_veh2", "_crate1_item_list", "_crate1_weapon_list", "_crate3_Item_List", "_crate4_item_list", "_crate4_backpack_list", "_ai_vehicle_list", "_ai_vehicle_0", "_ai_vehicle_1", "_crate4_position_list", "_crate4_position"];
 
 // For logging purposes
 _num = DMS_MissionCount;
@@ -361,8 +361,8 @@ _group3Count 	= ceil(_AICount/3);
 // Get AI to defend the position
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-_group = [_pos, _group1Count, _difficulty, "random", _side] call DMS_fnc_SpawnAIGroup;
-[ _group,_pos,_difficulty,"COMBAT" ] call DMS_fnc_SetGroupBehavior;
+_group1 = [_pos, _group1Count, _difficulty, "random", _side] call DMS_fnc_SpawnAIGroup;
+[ _group1,_pos,_difficulty,"COMBAT" ] call DMS_fnc_SetGroupBehavior;
 
 _buildings = _pos nearObjects ["building", 200];
 {
@@ -382,7 +382,7 @@ _buildings = _pos nearObjects ["building", 200];
 		_spawnPosition = _highest;
 
 		_i = _buildingPositions find _spawnPosition;
-		_wp = _group addWaypoint [_spawnPosition,0] ;
+		_wp = _group1 addWaypoint [_spawnPosition,0] ;
 		_wp setWaypointFormation "Column";
 		_wp setWaypointBehaviour "AWARE";
 		_wp setWaypointCombatMode "RED";
@@ -529,6 +529,7 @@ _veh1 =
 	_ai_vehicle_1	//Classname of the vehicle we want to spawn, use "random" if you just want one of the default DMS armed vehicles.
 ] call DMS_fnc_SpawnAIVehicle;
 
+
 // Define the classnames and locations where the crates can spawn (at least 5, since we're spawning 5 crates), crate 4 contains high end gear so has random spawn location to make it harder to find :)
 // Crate 4 has high end items so to make it more interesting, this has a random component to it. The list below sets the possible locations.
 _crate4_position_list = 
@@ -553,7 +554,8 @@ _crateClasses_and_Positions =
 	deleteVehicle (nearestObject _x);		// Make sure to remove any previous crates.
 } forEach _crateClasses_and_Positions;
 
-// Shuffle the list (I've disabled this as I don't feel it fits the mission, if you want playets to not know which crate has medical or snipers etc. then re-enable this)
+
+// Shuffle the crate list (I've disabled this as I don't feel it fits the mission, if you want players to not know which crate has medical or snipers etc. then re-enable this)
 // _crateClasses_and_Positions = _crateClasses_and_Positions call ExileClient_util_array_shuffle;
 
 // Create Crates
@@ -571,7 +573,10 @@ _crate4 = [_crateClasses_and_Positions select 4 select 1, _crateClasses_and_Posi
 // Define mission-spawned AI Units
 _missionAIUnits =
 [
-	[_group,_group2,_group3] 		// 3 groups spawned for this mission
+	_group,			// 3 groups spawned for this mission
+	_group1,
+	_group2,
+	_group3		
 ];
 
 // Define the group reinforcements - none for this mission
@@ -614,10 +619,11 @@ _crate4 setVariable ["ExileMoney",_crate_cash4,true]; //Adds poptabs to the box/
 // Define mission-spawned objects and loot values with vehicle
 _missionObjs =
 [
-	_staticGuns+[_veh]+[_veh1],			// static gun(s) & AI Vehicles. Note, we don't add the base itself because it already spawns on server start.
+	_staticGuns+[_veh]+[_veh1],	// static gun(s) & AI Vehicles. Note, we don't add the base itself because it already spawns on server start.
 	[],							// no vehicle prize, they can capture the AI vehicles on originating server and there's HEAPS of loot here.....
 	[[_crate0,_crate_loot_values0],[_crate1,_crate_loot_values1],[_crate2,_crate_loot_values2],[_crate3,_crate_loot_values3],[_crate4,_crate_loot_values4]]
 ];
+
 
 // Define Mission Start message
 _msgStart = ['#FFFF00',format["Serval is under martial law! There are reports of a large loot cache....",_difficultyM]];
@@ -630,6 +636,7 @@ _msgLOSE = ['#FF0000',"The troops have left Serval, taking the cache with them..
 
 // Define mission name (for map marker and logging)
 _missionName = "Serval Occupation";
+
 
 // Create Markers
 _markers =
@@ -645,6 +652,7 @@ _circle setMarkerSize [300,300];
 
 _time = diag_tickTime;
 
+
 // Parse and add mission info to missions monitor
 _added =
 [
@@ -652,7 +660,7 @@ _added =
 	[
 		[
 			"kill",
-			[_group,_group2,_group3]
+			[_group,_group1,_group2,_group3]
 		],
 		[
 			"playerNear",
@@ -672,6 +680,7 @@ _added =
 	_difficulty,
 	[[],[]]
 ] call DMS_fnc_AddMissionToMonitor_Static;
+
 
 // Check to see if it was added correctly, otherwise delete the stuff
 if !(_added) exitWith
@@ -697,6 +706,7 @@ if !(_added) exitWith
 	// Reset the mission count
 	DMS_MissionCount = DMS_MissionCount - 1;
 };
+
 
 // Notify players
 [_missionName,_msgStart] call DMS_fnc_BroadcastMissionStatus;
